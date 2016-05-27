@@ -1,0 +1,82 @@
+<div class="container">
+	<div class="row">
+		<div class="col-md-6" style="border-right: 1px solid #ddd;">
+			<div class="text-right pad30-height">
+				<button class="btn btn-primary" data-ui-sref="MobileAdd">Add New Mobile</button>
+			</div>
+
+			<div class="form-horizontal">
+				<div class="form-group margin0-bottom">
+					<label class="col-sm-2 control-label">Model</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" data-ng-model="Filter.Model" placeholder="Model" />
+					</div>
+				</div>
+
+				<div class="text-right">
+					<button class="btn btn-success" data-ng-click="Search()">Search</button>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Brand</label>
+					<div class="col-sm-6">
+						<select class="form-control" data-ng-model="Filter.BrandId"
+								data-ng-options="brand.id as brand.name for brand in BrandLookups">
+							<option value="">Choose Brand</option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<table class="table table-bordered table-hover margin50-top" data-ng-if="FilteredMobiles.length">
+				<thead>
+					<tr>
+						<th data-sort data-sort-field="SortField" data-sort-by="'Brand'" data-sort-order="SortOrder">Brand</th>
+						<th data-sort data-sort-field="SortField" data-sort-by="'Model'" data-sort-order="SortOrder">Model</th>
+						<th data-sort data-sort-field="SortField" data-sort-by="'Year'" data-sort-order="SortOrder">Year</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr data-ng-class="{'bg-info': $index === SelectedRow}" data-ng-click="SelectMobile(mobile, $index)" ng-repeat="mobile in FilteredMobiles | orderBy:SortField:(SortOrder==='Desc')  track by $index">
+						<td>{{mobile.BrandName}}</td>
+						<td>{{mobile.Model}}</td>
+						<td>{{mobile.Year}}</td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="well form-horizontal" data-ng-if="SelectedMobile">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Brand:</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{SelectedMobile.BrandName}}</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Model:</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{SelectedMobile.Model}}</p>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Year:</label>
+					<div class="col-sm-10">
+						<p class="form-control-static">{{SelectedMobile.Year}}</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div>
+				<h3 class="text-primary text-center">Manufacture Years <b>VS.</b> Mobiles Count</h3>
+				<div bar-chart data="YearsData"></div>
+			</div>
+			<div class="text-center margin50-top">
+				<h3 class="text-primary">Brands <b>VS.</b> Mobiles Count</h3>
+				<div dount-chart data="BrandsData"></div>
+			</div>
+
+		</div>
+	</div>
+</div>

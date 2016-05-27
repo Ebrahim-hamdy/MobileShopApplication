@@ -1,0 +1,52 @@
+<div class="container">
+
+	<div class="text-right pad30-height">
+		<h2 class="text-info">Add Mobile</h2>
+	</div>
+
+	<form name="frm" class="form-horizontal" novalidate>
+		<div class="form-group" data-ng-class="{ 'has-error' : frm.$submitted && frm.Model.$invalid }">
+			<label class="col-sm-2 control-label">Model</label>
+			<div class="col-sm-6">
+				<input type="text" name="Model" class="form-control" data-ng-model="Mobile.Model" placeholder="Model" required />
+				<p data-ng-show="frm.$submitted && frm.Model.$error.required" class="help-block">Model is required.</p>
+			</div>
+		</div>
+
+		<div class="form-group" data-ng-class="{ 'has-error' : frm.$submitted && frm.Year.$invalid }">
+			<label class="col-sm-2 control-label">Manufacture Year</label>
+			<div class="col-sm-6">
+				<input type="number" name="Year" class="form-control" data-ng-model="Mobile.Year" placeholder="Year" required />
+				<div data-ng-show="frm.$submitted" class="help-block">
+					<p class="help-block" data-ng-show="frm.Year.$error.required">Manufacture Year is required.</p>
+					<p class="help-block" data-ng-show="frm.Year.$error.number">Enter a valid Year.</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">Brand</label>
+			<div class="col-sm-6">
+				<select class="form-control" data-ng-model="Mobile.BrandId"
+						data-ng-options="brand.id as brand.name for brand in BrandLookups">
+					<option value="">Choose Brand</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-2 control-label">Memory</label>
+			<div class="col-sm-6">
+				<select class="form-control" data-ng-model="Mobile.MemoryId"
+						data-ng-options="memory.id as memory.name for memory in MemoryLookups">
+					<option value="">Choose Memory</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="text-right">
+			<button class="btn btn-default" data-ng-click="Back()">Back</button>
+			<button class="btn btn-success" data-ng-click="Save()">Save</button>
+		</div>
+	</form>
+</div>
