@@ -6,6 +6,8 @@
 
 	function MobileRepository() {
 
+		var mobiles = [];
+
 		function getBrandLookups() {
 			var brandLookups = [
 				{ id: 1, name: 'Samsung' },
@@ -31,7 +33,7 @@
 
 		function getMobiles() {
 
-			var mobiles = [
+			mobiles = [
 				{ Year: 2016, BrandId: 1, BrandName: 'Samsung', Model: 'S6' },
 				{ Year: 2010, BrandId: 2, BrandName: 'Apple', Model: 'iPhone4' },
 				{ Year: 2008, BrandId: 3, BrandName: 'Nokia', Model: '6600' },
@@ -46,8 +48,8 @@
 		};
 
 		function saveMobile(mobile) {
-
-			var savedMobiles = JSON.parse(localStorage.getItem('savedMobiles'));
+			var newMobiles = JSON.parse(localStorage.getItem('savedMobiles'));
+			var savedMobiles = newMobiles ? newMobiles : mobiles;
 			savedMobiles.splice(0, 0, mobile);
 			localStorage.setItem('savedMobiles', JSON.stringify(savedMobiles));
 		};
