@@ -15,35 +15,48 @@
 		$scope.BrandLookups = BrandLookups;
 		$scope.FilteredMobiles = Mobiles;
 
+		//$scope.$watch('FilteredMobiles', function (newVal, oldVal) {
+		//	console.log(newVal);
+		//});
+
 		$scope.SortField = 'Brand';
 		$scope.sortOrder = 'Desc';
 
 		$scope.Search = search;
 		$scope.SelectMobile = selectMobile;
 
-		var years = Mobiles.map(function (row) {
-			return row.Year;
-		}).reduce(function (yearMap, index) {
-			yearMap[index] = ++yearMap[index] || 1;
+		(function () {
+			setChartData();
+		})();
 
-			return yearMap;
-		}, []);
 
-		$scope.YearsData = Object.keys(years).map(function (key) {
-			return { Year: key, Count: years[key] };
-		});
+		function setChartData() {
+			var years = $scope.FilteredMobiles.map(function (row) {
+				return row.Year;
+			}).reduce(function (yearMap, index) {
+				yearMap[index] = ++yearMap[index] || 1;
 
-		var brands = Mobiles.map(function (row) {
-			return row.BrandName;
-		}).reduce(function (brandMap, index) {
-			brandMap[index] = ++brandMap[index] || 1;
+				return yearMap;
+			}, []);
 
-			return brandMap;
-		}, []);
+			$scope.YearsData = Object.keys(years).map(function (key) {
+				return { Year: key, Count: years[key] };
+			});
 
-		$scope.BrandsData = Object.keys(brands).map(function (key) {
-			return { Brand: key, Count: brands[key] };
-		});
+			var brands = $scope.FilteredMobiles.map(function (row) {
+				return row.BrandName;
+			}).reduce(function (brandMap, index) {
+				brandMap[index] = ++brandMap[index] || 1;
+
+				return brandMap;
+			}, []);
+
+			$scope.BrandsData = Object.keys(brands).map(function (key) {
+				return { Brand: key, Count: brands[key] };
+			});
+			console.log($scope.BrandsData);
+		}
+
 
 
 		function search() {
@@ -53,6 +66,8 @@
 			});
 			$scope.SelectedRow = '';
 			$scope.SelectedMobile = null;
+			setChartData();
+
 		};
 
 		function selectMobile(mobile, index) {
