@@ -15,23 +15,16 @@
 		$scope.BrandLookups = BrandLookups;
 		$scope.FilteredMobiles = Mobiles;
 
-		//$scope.$watch('FilteredMobiles', function (newVal, oldVal) {
-		//	console.log(newVal);
-		//});
-
 		$scope.SortField = 'Brand';
 		$scope.sortOrder = 'Desc';
 
+		$scope.SetChartData = setChartData;
 		$scope.Search = search;
 		$scope.SelectMobile = selectMobile;
 
-		(function () {
-			setChartData();
-		})();
 
-
-		function setChartData() {
-			var years = $scope.FilteredMobiles.map(function (row) {
+		function setChartData(data) {
+			var years = data.map(function (row) {
 				return row.Year;
 			}).reduce(function (yearMap, index) {
 				yearMap[index] = ++yearMap[index] || 1;
@@ -43,7 +36,7 @@
 				return { Year: key, Count: years[key] };
 			});
 
-			var brands = $scope.FilteredMobiles.map(function (row) {
+			var brands = data.map(function (row) {
 				return row.BrandName;
 			}).reduce(function (brandMap, index) {
 				brandMap[index] = ++brandMap[index] || 1;
@@ -54,9 +47,7 @@
 			$scope.BrandsData = Object.keys(brands).map(function (key) {
 				return { Brand: key, Count: brands[key] };
 			});
-			console.log($scope.BrandsData);
-		}
-
+		};
 
 
 		function search() {
@@ -66,8 +57,7 @@
 			});
 			$scope.SelectedRow = '';
 			$scope.SelectedMobile = null;
-			setChartData();
-
+			$scope.SetChartData($scope.FilteredMobiles);
 		};
 
 		function selectMobile(mobile, index) {

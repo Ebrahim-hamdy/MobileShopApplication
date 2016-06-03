@@ -82,21 +82,44 @@
 
 				svg.call(tip);
 
+				x.domain(scope.data.map(function (d) { return d.Year; }));
+				y.domain([0, d3.max(scope.data, function (d) { return d.Count; })]);
+
+				svg.append("g")
+					.attr("class", "x axis")
+					.attr("transform", "translate(0," + height + ")")
+					.call(xAxis);
+
+				svg.append("g")
+					.attr("class", "y axis")
+					.call(yAxis)
+				  .append("text")
+					.attr("transform", "rotate(-90)")
+					.attr("y", 6)
+					.attr("dy", ".71em")
+					.style("text-anchor", "end")
+					.text("Count");
+
+				svg.selectAll(".bar")
+					.data(scope.data)
+				  .enter().append("rect")
+					.attr("class", "bar")
+					.attr("x", function (d) { return x(d.Year); })
+					.attr("width", x.rangeBand())
+					.attr("y", function (d) { return y(d.Count); })
+					.attr("height", function (d) { return height - y(d.Count); })
+					.on('mouseover', tip.show)
+					.on('mouseout', tip.hide);
+
 				scope.$watch('data', function (newVal, oldVal) {
 					console.log(newVal);
 
 					var bars = svg.selectAll('.bar')
 								 .data(scope.data);
 
-					// Remove
 					bars.exit().remove();
-					// Add
 					bars.enter().append('rect');
 
-					// Update 
-
-					//d3.select(svg[0]).datum(scope.data).call(chart);
-					chart();
 					bars.attr("class", "bar")
 						.attr("x", function (d) { return x(d.Year); })
 						.attr("width", x.rangeBand())
@@ -106,39 +129,6 @@
 						.on('mouseout', tip.hide);
 
 				});
-
-				var chart = function () {
-					x.domain(scope.data.map(function (d) { return d.Year; }));
-					y.domain([0, d3.max(scope.data, function (d) { return d.Count; })]);
-
-					svg.append("g")
-						.attr("class", "x axis")
-						.attr("transform", "translate(0," + height + ")")
-						.call(xAxis);
-
-					svg.append("g")
-						.attr("class", "y axis")
-						.call(yAxis)
-					  .append("text")
-						.attr("transform", "rotate(-90)")
-						.attr("y", 6)
-						.attr("dy", ".71em")
-						.style("text-anchor", "end")
-						.text("Count");
-
-					svg.selectAll(".bar")
-						.data(scope.data)
-					  .enter().append("rect")
-						.attr("class", "bar")
-						.attr("x", function (d) { return x(d.Year); })
-						.attr("width", x.rangeBand())
-						.attr("y", function (d) { return y(d.Count); })
-						.attr("height", function (d) { return height - y(d.Count); })
-						.on('mouseover', tip.show)
-						.on('mouseout', tip.hide);
-				};
-
-
 			}
 		};
 	}]);
@@ -150,22 +140,16 @@
 				data: '='
 			},
 			link: function (scope, element, attrs) {
-				var dataset = [
-					{ name: 'IE', percent: 39.10 },
-					{ name: 'Chrome', percent: 32.51 },
-					{ name: 'Safari', percent: 13.68 },
-					{ name: 'Firefox', percent: 8.71 },
-					{ name: 'Others', percent: 6.01 }
-				];
 
 				var pie = d3.layout.pie()
-						.value(function (d) { return d.Count })
-						.sort(null)
-						.padAngle(.03);
+							.value(function (d) { return d.Count })
+							.sort(null)
+							.padAngle(.03);
 
-				var w = 300, h = 300;
+				var width = 300,
+					hight = 300;
 
-				var outerRadius = w / 2;
+				var outerRadius = width / 2;
 				var innerRadius = 100;
 
 				var color = d3.scale.category10();
@@ -177,15 +161,13 @@
 				var svg = d3.select(element[0])
 						.append("svg")
 						.attr({
-							width: w,
-							height: h,
+							width: width,
+							height: hight,
 							class: 'shadow'
 						}).append('g')
 						.attr({
-							transform: 'translate(' + w / 2 + ',' + h / 2 + ')'
+							transform: 'translate(' + width / 2 + ',' + hight / 2 + ')'
 						});
-
-
 
 				var path = svg.selectAll('path')
 						.data(pie(scope.data))
@@ -207,64 +189,91 @@
 						};
 					});
 
-				var text = svg.selectAll('text')
-				  .data(pie(scope.data))
-				  .enter()
-				  .append("text")
-				  .transition()
-				  .duration(200)
-				  .attr("transform", function (d) {
-				  	return "translate(" + arc.centroid(d) + ")";
-				  })
-				 .attr("dy", ".4em")
-				  .attr("text-anchor", "middle")
-				  .text(function (d) {
-				  	return d.data.Count + "%";
-				  })
-				  .style({
-				  	fill: '#fff',
-				  	'font-size': '10px'
-				  });
 
-				var legendRectSize = 20;
-				var legendSpacing = 7;
-				var legendHeight = legendRectSize + legendSpacing;
+				scope.$watch('data', function (newVal, oldVal) {
 
+					var newPie = svg.selectAll('path')
+									.data(pie(scope.data));
 
-				var legend = svg.selectAll('.legend')
-				  .data(color.domain())
-				  .enter()
-				  .append('g')
-				  .attr({
-				  	class: 'legend',
-				  	transform: function (d, i) {
-				  		return 'translate(-35,' + ((i * legendHeight) - 65) + ')';
-				  	}
-				  });
+					var newText = svg.selectAll('text')
+									.data(pie(scope.data));
 
-				legend.append('rect')
-				  .attr({
-				  	width: legendRectSize,
-				  	height: legendRectSize,
-				  	rx: 20,
-				  	ry: 20
-				  })
-				  .style({
-				  	fill: color,
-				  	stroke: color
-				  });
+					var newLegend = svg.selectAll('.legend')
+									.data(color.domain());
 
-				legend.append('text')
-				  .attr({
-				  	x: 30,
-				  	y: 15
-				  })
-				  .text(function (d) {
-				  	return d;
-				  }).style({
-				  	fill: '#929DAF',
-				  	'font-size': '14px'
-				  });
+					var legendRectSize = 20;
+					var legendSpacing = 7;
+					var legendHeight = legendRectSize + legendSpacing;
+
+					newPie.exit().remove();
+					newText.exit().remove();
+					newLegend.exit().remove();
+
+					newPie.enter().append('path');
+					newText.enter().append("text");
+					newLegend.enter().append("g");
+
+					newPie.attr({
+						d: arc,
+						fill: function (d, i) {
+							return color(d.data.Brand);
+						}
+					})
+					.transition()
+					.duration(1000)
+					.attrTween('d', function (d) {
+						var interpolate = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+						return function (t) {
+							return arc(interpolate(t));
+						};
+					});
+
+					newText.transition()
+					  .duration(200)
+					  .attr("transform", function (d) {
+					  	return "translate(" + arc.centroid(d) + ")";
+					  })
+					 .attr("dy", ".4em")
+					  .attr("text-anchor", "middle")
+					  .text(function (d) {
+					  	return d.data.Count + "%";
+					  })
+					  .style({
+					  	fill: '#fff',
+					  	'font-size': '10px'
+					  });
+
+					newLegend.attr({
+						class: 'legend',
+						transform: function (d, i) {
+							return 'translate(-35,' + ((i * legendHeight) - 65) + ')';
+						}
+					});
+
+					newLegend.append('rect')
+					  .attr({
+					  	width: legendRectSize,
+					  	height: legendRectSize,
+					  	rx: 20,
+					  	ry: 20
+					  })
+					  .style({
+					  	fill: color,
+					  	stroke: color
+					  });
+
+					newLegend.append('text')
+					  .attr({
+					  	x: 30,
+					  	y: 15
+					  })
+					  .text(function (d) {
+					  	return d;
+					  }).style({
+					  	fill: '#929DAF',
+					  	'font-size': '14px'
+					  });
+				});
 			}
 		};
 	}]);
